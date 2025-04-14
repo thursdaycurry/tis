@@ -5,22 +5,18 @@ import { ScraperService } from 'lib/domain/scraper/scraper.service';
 export class ContentsService {
   constructor(private readonly scraperService: ScraperService) {}
 
-  async summarize(url: string) {
+  async summarize(url: string, language = 'Korean') {
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API || '',
     });
 
-    // const test = this.scraperService.ping();
-    // console.log(`test`);
-    // return test;
-
-    const res = await fetch(url, {});
-    const html = await res.text();
+    const response = await fetch(url, {});
+    const html = await response.text();
     const { title, textContent, siteName, publishedTime } =
       this.scraperService.parseHtml(html, url);
 
-    const prompt = `You are professional article summary writer. Please summarize the <article>. <article>${textContent}</article>`;
-    const completion = await client.chat.completions.create({
+    const prompt = `You are professional article summary writer. Please summarize the <article> in language ${language}. <article>${textContent}</article>`;
+    const articleSummary = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
@@ -30,7 +26,14 @@ export class ContentsService {
       ],
     });
 
-    return completion;
+    const result = {
+      title,
+      siteName,
+      publishedTime,
+      content: articleSummary.choices[0].message.content,
+    };
+
+    return result;
   }
 
   ping() {

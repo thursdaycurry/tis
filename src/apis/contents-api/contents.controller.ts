@@ -8,7 +8,8 @@ export class ContentsController {
 
   @Post('/summary')
   async summarize(@Body() createSummaryDto: CreateSummaryDto) {
-    return await this.contentsService.summarize(createSummaryDto.url);
+    const { url, language } = createSummaryDto;
+    return await this.contentsService.summarize(url, language);
   }
 
   @Get('/ping')
