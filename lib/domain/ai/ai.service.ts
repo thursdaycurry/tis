@@ -20,8 +20,24 @@ export class AiService {
     });
 
     const result = articleSummary.choices[0].message.content;
-
-    console.log(`result`, result);
     return result;
+  }
+
+  /**
+   * This method is dependant on openai platform. Need to improve
+   *
+   * @param model 'gpt-4o-mini-tts'
+   * @param voice 'alloy' -> [alloy, ash, ballad, coral, echo, fable, onyx, nova, sage, shimmer, verse].
+   * @param input "모든 것은 마음으로부터 비롯된다."
+   * @returns
+   */
+  async createAudioWithText(model = 'gpt-4o-mini-tts', voice = 'alloy', input) {
+    const res = await this.openAiClient.audio.speech.create({
+      model,
+      voice,
+      input,
+    });
+
+    return res.body as unknown as NodeJS.ReadableStream;
   }
 }

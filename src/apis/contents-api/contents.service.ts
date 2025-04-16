@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { createReadStream } from 'fs';
 import { AiService } from 'lib/domain/ai/ai.service';
 
 import { ScraperService } from 'lib/domain/scraper/scraper.service';
@@ -28,6 +29,18 @@ export class ContentsService {
     };
 
     return result;
+  }
+
+  async textToSpeech(model, voice, input) {
+    if (!input) throw new BadRequestException(`input text should be provided`);
+
+    const audioStream = await this.aiService.createAudioWithText(
+      model,
+      voice,
+      input,
+    );
+
+    return audioStream;
   }
 
   ping() {

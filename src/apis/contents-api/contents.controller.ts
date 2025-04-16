@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { ContentsService } from './contents.service';
 import { CreateSummaryDto } from './dto/create-summary.dto';
+import { Response } from 'express';
 
 @Controller('contents')
 export class ContentsController {
@@ -10,6 +11,25 @@ export class ContentsController {
   async summarize(@Body() createSummaryDto: CreateSummaryDto) {
     const { url, language } = createSummaryDto;
     return await this.contentsService.summarize(url, language);
+  }
+
+  @Post('/tts')
+  async textToSpeech(@Body() ttsDto, @Res() res: Response) {
+    const { model, voice, input } = ttsDto;
+    const filename = 'test-tts-audio';
+
+    const audioStream = await this.contentsService.textToSpeech(
+      model,
+      voice,
+      input,
+    );
+
+    res.set({
+      'Content-Type': 'audio/mp3',
+      'Content-Disposition': `inline; filename="${filename}.mp3`,
+    });
+
+    audioStream.pipe(res);
   }
 
   @Get('/ping')
