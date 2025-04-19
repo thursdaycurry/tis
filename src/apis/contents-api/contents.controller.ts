@@ -15,13 +15,14 @@ export class ContentsController {
 
   @Post('/tts')
   async textToSpeech(@Body() ttsDto, @Res() res: Response) {
-    const { model, voice, input } = ttsDto;
+    const { model, voice, input, language } = ttsDto;
     const filename = 'test-tts-audio';
 
     const audioStream = await this.contentsService.textToSpeech(
       model,
       voice,
       input,
+      language,
     );
 
     res.set({

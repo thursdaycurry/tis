@@ -31,12 +31,24 @@ export class AiService {
    * @param input "모든 것은 마음으로부터 비롯된다."
    * @returns
    */
-  async createAudioWithText(model = 'gpt-4o-mini-tts', voice = 'alloy', input) {
+  async createAudioWithText(
+    model = 'gpt-4o-mini-tts',
+    voice = 'alloy',
+    input,
+    language,
+  ) {
+    const instructions = `Speak clearly and deliberately, like a spiritual leader addressing followers, with a calm, composed, and serene tone. ${
+      language && `Speak in ${language}`
+    }`;
+
     const res = await this.openAiClient.audio.speech.create({
       model,
       voice,
       input,
+      instructions,
     });
+
+    console.log(instructions);
 
     return res.body as unknown as NodeJS.ReadableStream;
   }
